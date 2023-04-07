@@ -40,7 +40,6 @@ async def on_raw_reaction_add(payload):
                 reviewer = await client.fetch_user(id)
                 channel = client.get_channel(payload.channel_id)
                 message = await channel.fetch_message(payload.message_id)
-                print(id)
                 await reviewer.send(
                     f"{reviewer.name} is looking at your motherfking PR {message.jump_url}"
                 )
@@ -51,7 +50,6 @@ async def on_raw_reaction_add(payload):
                 reviewer = await client.fetch_user(id)
                 channel = client.get_channel(payload.channel_id)
                 message = await channel.fetch_message(payload.message_id)
-                print(id)
                 await reviewer.send(
                     f"{reviewer.name} has approved your PR {message.jump_url}"
                 )
