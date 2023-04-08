@@ -45,21 +45,19 @@ async def on_raw_reaction_add(payload):
     if payload.emoji.name == "👀":
         if message.author.id == payload.user_id:
             await message.remove_reaction("👀", payload.member)
-            await channel.send("Dude you gotta ask your team mates to review your PR")
+            await channel.send("Please review your teammate's pull request")
             return
         for id in membersIds:
             if id != int(str(BOT_ID)) and id != payload.user_id:
                 reviewer = await client.fetch_user(id)
                 await reviewer.send(
-                    f"{reviewer.name} is looking at your motherfking PR {message.jump_url}"
+                    f"{reviewer.name} is reviewing your pull request {message.jump_url}"
                 )
 
     if payload.emoji.name == "✅":
         if message.author.id == payload.user_id:
             await message.remove_reaction("✅", payload.member)
-            await channel.send(
-                "You just approved your own PR, Are you that good of a programmer?"
-            )
+            await channel.send("Please approve your teammate's pull request")
             return
         for id in membersIds:
             if id != int(str(BOT_ID)) and id != payload.user_id:
@@ -67,7 +65,7 @@ async def on_raw_reaction_add(payload):
                 channel = client.get_channel(payload.channel_id)
                 message = await channel.fetch_message(payload.message_id)
                 await reviewer.send(
-                    f"{reviewer.name} has approved your PR {message.jump_url}"
+                    f"{reviewer.name} has approved your pull request {message.jump_url}"
                 )
 
 
