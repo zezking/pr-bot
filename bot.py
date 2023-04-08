@@ -34,28 +34,27 @@ async def on_message(message):
 @client.event
 async def on_raw_reaction_add(payload):
     emoji_action = {
-        "👀": ("is reviewing"),
-        "✅": ("has approved"),
+        "👀": "is reviewing",
+        "✅": "has approved",
     }
     members = client.get_all_members()
     membersIds = list(map(lambda member: member.id, members))
     channel = client.get_channel(payload.channel_id)
     message = await channel.fetch_message(payload.message_id)
+    reviewer = await client.fetch_user(payload.user_id)
 
     if payload.channel_id != int(str(REVIEW_CHANNEL_ID)):
         return
     if message.author.id == payload.user_id:
         await message.remove_reaction(payload.emoji.name, payload.member)
-        await channel.send("You can't review or approve your own pullrequest")
+        await channel.send("You can't review or approve your own pull request")
         return
 
     for id in membersIds:
         if id != int(str(BOT_ID)) and id != payload.user_id:
-            reviewer = await client.fetch_user(id)
-            channel = client.get_channel(payload.channel_id)
-            message = await channel.fetch_message(payload.message_id)
-            await reviewer.send(
-                f"{reviewer.name} {emoji_action[payload.emoji.name]} {message.jump_url}"
+            user = await client.fetch_user(id)
+            await user.send(
+                f"{reviewer.name} {emoji_action[payload.emoji.name]} {message.author.name}'s pull request -> {message.jump_url}"
             )
 
 
