@@ -7,6 +7,7 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 GUILD = os.getenv("DISCORD_GUILD")
 BOT_ID = os.getenv("DISCORD_BOT_ID")
+REVIEW_CHANNEL_ID = os.getenv("DISCORD_REVIEW_CHANNEL_ID")
 intents = discord.Intents.default()
 intents.members = True
 intents.reactions = True
@@ -34,19 +35,34 @@ async def on_message(message):
 async def on_raw_reaction_add(payload):
     members = client.get_all_members()
     membersIds = list(map(lambda member: member.id, members))
-    if payload.emoji.name == "👀" and payload.channel_id == 1093683351300350012:
+
+    channel = client.get_channel(payload.channel_id)
+    message = await channel.fetch_message(payload.message_id)
+
+    if payload.channel_id != int(str(REVIEW_CHANNEL_ID)):
+        return
+
+    if payload.emoji.name == "👀":
+        if message.author.id == payload.user_id:
+            await message.remove_reaction("👀", payload.member)
+            await channel.send("Dude you gotta ask your team mates to review your PR")
+            return
         for id in membersIds:
-            if id != int(str(BOT_ID)):
+            if id != int(str(BOT_ID)) and id != payload.user_id:
                 reviewer = await client.fetch_user(id)
-                channel = client.get_channel(payload.channel_id)
-                message = await channel.fetch_message(payload.message_id)
                 await reviewer.send(
                     f"{reviewer.name} is looking at your motherfking PR {message.jump_url}"
                 )
 
-    if payload.emoji.name == "✅" and payload.channel_id == 1093683351300350012:
+    if payload.emoji.name == "✅":
+        if message.author.id == payload.user_id:
+            await message.remove_reaction("✅", payload.member)
+            await channel.send(
+                "You just approved your own PR, Are you that good of a programmer?"
+            )
+            return
         for id in membersIds:
-            if id != int(str(BOT_ID)):
+            if id != int(str(BOT_ID)) and id != payload.user_id:
                 reviewer = await client.fetch_user(id)
                 channel = client.get_channel(payload.channel_id)
                 message = await channel.fetch_message(payload.message_id)
