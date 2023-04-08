@@ -20,7 +20,7 @@ client = discord.Client(intents=intents)
 @client.event
 async def on_ready():
     try:
-        print(f"{client.user} has connected guild")
+        print(f"{client.user} has connected discord server")
     except Exception as err:
         print(f"Failed to look for guild {err}")
 
